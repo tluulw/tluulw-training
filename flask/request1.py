@@ -11,7 +11,7 @@ def main():
     db_session.global_init('db/database.db')
     db_sess = db_session.create_session()
     for user in db_sess.query(User).filter((User.position.like('%middle%')) | (User.position.like('%chief%'))).all():
-        print(user.surname, user.name)
+        print(user)
 
 
 if __name__ == '__main__':

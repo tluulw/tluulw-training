@@ -1,4 +1,5 @@
 import datetime
+
 import sqlalchemy
 from sqlalchemy import orm
 
@@ -20,3 +21,6 @@ class Jobs(SqlAlchemyBase):
                                  default=datetime.datetime.now)
     is_finished = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     user = orm.relationship('User')
+
+    def __repr__(self):
+        return f'<Job> {self.job}'
