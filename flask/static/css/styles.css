@@ -1,0 +1,26 @@
+h4 {
+  color: gray;
+  padding-left: 20px;
+}
+.logintitle::before{
+  content: url('/static/images/emblem.png');
+}
+.works_log_cell {
+  background-color: #c3e7f7;
+  color: black;
+}
+.works_log_last_cell {
+  background-color: #f783b0;
+  color: black;
+}
+.works_log_head {
+  background-color: lightgray;
+  color: black;
+}
+.works_log_action {
+  color: black;
+  padding-left: 0px;
+}
+.works_log_label {
+  text-align: center;
+}

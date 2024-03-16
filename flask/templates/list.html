@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block budut %}
+  <h4>И на Марсе будут яблони цвести!</h4>
+{% endblock %}
+
+
+{% block content %}
+  <h2>Список профессий</h2>
+  {% if type == None %}
+      {% for item in list %}
+          <dev>{{item}}</dev>
+          <br>
+      {% endfor %}
+  {% elif type == 'ul' %}
+      <ul>
+        {% for item in list %}
+            <li>{{item}}</li>
+        {% endfor %}
+      </ul>
+  {% else %}
+      <ol>
+          {% for item in list %}
+              <li>{{item}}</li>
+          {% endfor %}
+      </ol>
+  {% endif %}
+{% endblock %}

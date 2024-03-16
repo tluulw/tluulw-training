@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block budut %}
+  <h4>И на Марсе будут яблони цвести!</h4>
+{% endblock %}
+
+{% block content %}
+    <h3 class="works_log_label">Works log</h3>
+    {% for job in jobs %}
+          <h4 class="works_log_action">Action #{{loop.index}}</h4>
+          <table class="table">
+                <thead class="works_log_head">
+                    <tr>
+                        <th scope="col">Title of activity</th>
+                        <th scope="col">Team leader</th>
+                        <th scope="col">Duration</th>
+                        <th scope="col">List of collaborators</th>
+                        <th scope="col">Is finished</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="works_log_cell">{{job['job']}}</td>
+                        <td class="works_log_cell">{{job['leader'][0]}} {{job['leader'][1]}}</td>
+                        <td class="works_log_cell">{{job['dur']}}</td>
+                        <td class="works_log_cell">{{job['cols']}}</td>
+                        {% if job['fin'] == False %}
+                            <td class="works_log_last_cell">Is not finished</td>
+                        {% else %}
+                            <td class="works_log_last_cell">Is finished</td>
+                        {% endif %}
+                    </tr>
+                </tbody>
+          </table>
+      {% endfor %}
+{% endblock %}

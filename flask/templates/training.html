@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block budut %}
+  <h4>И на Марсе будут яблони цвести!</h4>
+{% endblock %}
+
+
+{% block content %}
+  {% if prof == 'it' %}
+      <h2>Инженерные тренажеры</h2>
+      <img src="/static/images/ing.png">
+  {% else %}
+      <h2>Научные симуляторы</h2>
+      <img src="/static/images/sci.png">
+  {% endif %}
+{% endblock %}
