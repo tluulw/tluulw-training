@@ -8,6 +8,7 @@ def main():
     db_sess = db_session.create_session()
 
     jobs = []
+    team_leaders = set()
 
     for job in db_sess.query(Jobs).all():
         if jobs:
@@ -21,7 +22,10 @@ def main():
 
     for job in jobs:
         for team_leader in db_sess.query(User).filter(User.id.like(job.team_leader)).all():
-            print(team_leader.surname, team_leader.name)
+            team_leaders.add((team_leader.name, team_leader.surname))
+
+    for elem in team_leaders:
+        print(*elem)
 
 
 if __name__ == '__main__':
