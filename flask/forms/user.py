@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, StringField, TextAreaField, SubmitField, EmailField, BooleanField, IntegerField
+from wtforms import PasswordField, StringField, SubmitField, EmailField, BooleanField, IntegerField
 from wtforms.validators import DataRequired
 
 
@@ -29,3 +29,12 @@ class Login2xForm(FlaskForm):
     captain_id = StringField('Id капитана', validators=[DataRequired()])
     captain_password = PasswordField('Пароль капитана', validators=[DataRequired()])
     submit = SubmitField('Доступ')
+
+
+class AddJobForm(FlaskForm):
+    job_title = StringField('Job Title', validators=[DataRequired()])
+    team_leader = IntegerField('Team Leader id', validators=[DataRequired()])
+    work_size = IntegerField('Work size', validators=[DataRequired()])
+    collaborators = StringField('Collaborators', validators=[DataRequired()])
+    is_finished = BooleanField('Is Job finished?')
+    submit = SubmitField('Submit')

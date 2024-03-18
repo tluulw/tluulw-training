@@ -1,11 +1,10 @@
 from flask import Flask, render_template, redirect
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, login_user, logout_user, login_required
 
 from data import db_session
 from data.jobs import Jobs
-from data.news import News
 from data.users import User
-from forms.user import RegisterForm, LoginForm
+from forms.user import RegisterForm, LoginForm, AddJobForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -18,59 +17,6 @@ login_manager.init_app(app)
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
-
-
-profs = ['инженер-исследователь', 'пилот', 'строитель', 'экзобиолог', 'врач', 'инженер по терраформированию',
-         'климатолог', 'специалист по радиационной защите', 'астрогеолог', 'гляциолог',
-         'инженер жизнеобеспечения', 'метеоролог', 'оператор марсохода', 'киберинженер', 'штурман',
-         'пилот дронов']
-
-anketa = {'title': 'Анкета', 'surname': 'Watny', 'name': "Mark", 'education': 'выше среднего',
-          'profession': "штурман марсохода", 'sex': "male", 'motivation': "Всегда мечтал застрять на Марсе!",
-          'ready': 'True'}
-
-
-@app.route('/list_prof')
-@app.route('/list_prof/<type>')
-def list_prof(type=None):
-    if type is None:
-        return render_template('list.html', title='Заготовка', list=profs, type=type)
-    if type == 'ul' or type == 'ol':
-        return render_template('list.html', title='Заготовка', list=profs, type=type)
-
-
-@app.route("/")
-def index():
-    db_sess = db_session.create_session()
-    if current_user.is_authenticated:
-        news = db_sess.query(News).filter(
-            (News.user == current_user) | (News.is_private != True))
-    else:
-        news = db_sess.query(News).filter(News.is_private != True)
-    return render_template("index.html", news=news)
-
-
-@app.route('/answer')
-@app.route('/auto_answer')
-def auto_answer():
-    return render_template('auto_answer.html',
-                           title=anketa['title'],
-                           surname=anketa['surname'],
-                           name=anketa['name'],
-                           education=anketa['education'],
-                           profession=anketa['profession'],
-                           sex=anketa['sex'],
-                           motivation=anketa['motivation'],
-                           ready=anketa['ready'],
-                           )
-
-
-@app.route('/training/<prof>')
-def training(prof):
-    if 'инженер' in prof or 'строитель' in prof:
-        return render_template('training.html', prof='it')
-    else:
-        return render_template('training.html', prof='ns')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -88,7 +34,7 @@ def login():
     return render_template('login.html', title='Авторизация', form=form)
 
 
-@app.route('/works_log')
+@app.route('/')
 def works_log():
     db_session.global_init('db/database.db')
     db_sess = db_session.create_session()
@@ -146,6 +92,29 @@ def register():
 def logout():
     logout_user()
     return redirect("/")
+
+
+@app.route('/addjob', methods=['GET', 'POST'])
+def add_job():
+    form = AddJobForm()
+
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        if db_sess.query(Jobs).filter(Jobs.job == form.job_title.data).first():
+            return render_template('add_job.html', title='Adding a job',
+                                   form=form,
+                                   message="Работа с таким названием уже существует")
+        job = Jobs(
+            job=form.job_title.data,
+            team_leader=form.team_leader.data,
+            work_size=form.work_size.data,
+            collaborators=form.collaborators.data,
+            is_finished=form.is_finished.data,
+        )
+        db_sess.add(job)
+        db_sess.commit()
+        return redirect('/')
+    return render_template('add_job.html', title='Adding a job', form=form)
 
 
 def main():
