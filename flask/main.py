@@ -1,5 +1,7 @@
+import datetime
+
 from flask import Flask, render_template, redirect
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
 from data import db_session
 from data.jobs import Jobs
@@ -103,7 +105,7 @@ def add_job():
         if db_sess.query(Jobs).filter(Jobs.job == form.job_title.data).first():
             return render_template('add_job.html', title='Adding a job',
                                    form=form,
-                                   message="Работа с таким названием уже существует")
+                                   message="Работа с таким названием уже существует", h='Adding a Job')
         job = Jobs(
             job=form.job_title.data,
             team_leader=form.team_leader.data,
@@ -114,7 +116,45 @@ def add_job():
         db_sess.add(job)
         db_sess.commit()
         return redirect('/')
-    return render_template('add_job.html', title='Adding a job', form=form)
+    return render_template('add_job.html', title='Adding a job', form=form, h='Adding a Job')
+
+
+@app.route('/editjob/<int:id>', methods=['GET', 'POST'])
+def edit_job(id):
+    form = AddJobForm()
+    db_sess = db_session.create_session()
+
+    for job in db_sess.query(Jobs).filter(Jobs.id == id).all():
+        if current_user.id != 1 and current_user.id != job.team_leader:
+            return redirect('/')
+
+    if form.validate_on_submit():
+        print(form.job_title.data)
+        if db_sess.query(Jobs).filter(Jobs.job == form.job_title.data).first():
+            return render_template('add_job.html', title='Editing a job',
+                                   form=form,
+                                   message="Работа с таким названием уже существует", h='Editing a Job')
+
+        job = db_sess.query(Jobs).filter(Jobs.id == id).all()[0]
+        job.job = form.job_title.data
+        job.team_leader = form.team_leader.data
+        job.work_size = form.work_size.data
+        job.collaborators = form.collaborators.data
+        job.start_date = datetime.datetime.now()
+        job.end_date = datetime.datetime.now()
+        job.is_finished = form.is_finished.data
+
+        db_sess.commit()
+
+        return redirect('/')
+
+    for job in db_sess.query(Jobs).filter(Jobs.id == id).all():
+        form.job_title.data = job.job
+        form.team_leader.data = job.team_leader
+        form.work_size.data = job.work_size
+        form.collaborators.data = job.collaborators
+        form.is_finished.data = job.is_finished
+    return render_template('add_job.html', title='Editing a job', form=form, h='Editing a Job')
 
 
 def main():
