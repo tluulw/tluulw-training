@@ -3,10 +3,11 @@ import datetime
 from flask import Flask, render_template, redirect
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
-from data import db_session, jobs_api
+from data import db_session
 from data.jobs import Jobs
 from data.users import User
 from forms.user import RegisterForm, LoginForm, AddJobForm
+import jobs_api
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'

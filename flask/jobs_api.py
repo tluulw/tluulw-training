@@ -1,10 +1,9 @@
-import json
+from flask import Blueprint, render_template, request
 
-from flask import Blueprint, render_template
-
-from . import db_session
-from .jobs import Jobs
-from .users import User
+from data import db_session
+from data.jobs import Jobs
+from data.users import User
+from forms.user import AddJobForm
 
 blueprint = Blueprint(
     'jobs_api',
@@ -27,7 +26,7 @@ def get_jobs():
                                                 'cols': elem.collaborators,
                                                 'fin': elem.is_finished}]
 
-    return json.dumps(jobs)
+    return jobs
 
 
 @blueprint.route('/api/jobs/<int:job_id>')
@@ -60,3 +59,32 @@ def get_one_job(job_id):
 @blueprint.route('/api/jobs/<path:job_path>')
 def iskl(job_path):
     return f'Неверный id работы: {job_path}'
+
+
+@blueprint.route('/api/jobs/add_job', methods=['POST'])
+def add_job():
+    form = AddJobForm()
+
+    db_sess = db_session.create_session()
+
+    data = request.json
+
+    fields = ['job_title', 'team_leader', 'work_size', 'collaborators', 'is_finished']
+
+    if len(data) < len(fields) or len(data) > len(fields):
+        return 'нехорошо'
+
+    if db_sess.query(Jobs).filter(Jobs.job == data['job_title']).first():
+        return 'Работа с таким названием уже существует'
+
+    job = Jobs(
+        job=data['job_title'],
+        team_leader=data['team_leader'],
+        work_size=data['work_size'],
+        collaborators=data['collaborators'],
+        is_finished=data['is_finished'],
+    )
+
+    db_sess.add(job)
+    db_sess.commit()
+    return 'Работа была добавлена'
