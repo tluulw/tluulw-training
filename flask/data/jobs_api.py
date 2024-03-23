@@ -1,9 +1,10 @@
 import json
 
 from flask import Blueprint, render_template
-from .users import User
+
 from . import db_session
 from .jobs import Jobs
+from .users import User
 
 blueprint = Blueprint(
     'jobs_api',
@@ -36,7 +37,7 @@ def get_one_job(job_id):
     if db_sess.query(Jobs).filter(Jobs.id == job_id).all():
         pass
     else:
-        return 'Неверный id работы'
+        return f'Неверный id работы: {job_id}'
 
     jobs = []
 
@@ -54,3 +55,8 @@ def get_one_job(job_id):
             )
 
     return render_template('works_log.html', jobs=jobs)
+
+
+@blueprint.route('/api/jobs/<path:job_path>')
+def iskl(job_path):
+    return f'Неверный id работы: {job_path}'
