@@ -3,7 +3,7 @@ import datetime
 from flask import Flask, render_template, redirect
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
-from data import db_session
+from data import db_session, jobs_api
 from data.jobs import Jobs
 from data.users import User
 from forms.user import RegisterForm, LoginForm, AddJobForm
@@ -96,7 +96,7 @@ def logout():
     return redirect("/")
 
 
-@app.route('/addjob', methods=['GET', 'POST'])
+@app.route('/add_job', methods=['GET', 'POST'])
 def add_job():
     form = AddJobForm()
 
@@ -119,7 +119,7 @@ def add_job():
     return render_template('add_job.html', title='Adding a job', form=form, h='Adding a Job')
 
 
-@app.route('/editjob/<int:id>', methods=['GET', 'POST'])
+@app.route('/edit_job/<int:id>', methods=['GET', 'POST'])
 def edit_job(id):
     form = AddJobForm()
     db_sess = db_session.create_session()
@@ -157,8 +157,23 @@ def edit_job(id):
     return render_template('add_job.html', title='Editing a job', form=form, h='Editing a Job')
 
 
+@app.route('/delete_job/<int:id>')
+def delete_job(id):
+    db_sess = db_session.create_session()
+    job = db_sess.query(Jobs).filter(Jobs.id == id).all()[0]
+    if current_user.id != 1 and current_user.id != job.team_leader:
+        return redirect('/')
+    db_sess.delete(job)
+    if db_sess.query(Jobs).filter(Jobs.id == id + 1).first():
+        for job in db_sess.query(Jobs).filter(Jobs.id > id).all():
+            job.id = job.id - 1
+    db_sess.commit()
+    return redirect('/')
+
+
 def main():
     db_session.global_init('db/database.db')
+    app.register_blueprint(jobs_api.blueprint)
     app.run(port=5000, host='127.0.0.1')
 
 
