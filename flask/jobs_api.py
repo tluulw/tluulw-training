@@ -5,7 +5,6 @@ from flask import Blueprint, render_template, request, jsonify, make_response
 from data import db_session
 from data.jobs import Jobs
 from data.users import User
-from forms.user import AddJobForm
 
 blueprint = Blueprint(
     'jobs_api',
@@ -63,8 +62,6 @@ def iskl(job_path):
 
 @blueprint.route('/api/jobs/add_job', methods=['POST'])
 def add_job():
-    form = AddJobForm()
-
     db_sess = db_session.create_session()
 
     data = request.json
@@ -102,7 +99,7 @@ def delete_job(job_id):
     db_sess.delete(job)
 
     if db_sess.query(Jobs).filter(Jobs.id == job_id + 1).first():
-        for job in db_sess.query(Jobs).filter(Jobs.id > id).all():
+        for job in db_sess.query(Jobs).filter(Jobs.id > job_id).all():
             job.id = job.id - 1
 
     db_sess.commit()
@@ -117,8 +114,6 @@ def delete_job_error(job_path):
 
 @blueprint.route('/api/jobs/edit_job/<int:job_id>', methods=['PUT'])
 def edit_job(job_id):
-    form = AddJobForm()
-
     db_sess = db_session.create_session()
 
     data = request.json

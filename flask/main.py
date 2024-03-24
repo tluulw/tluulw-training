@@ -8,6 +8,7 @@ from data.jobs import Jobs
 from data.users import User
 from forms.user import RegisterForm, LoginForm, AddJobForm
 import jobs_api
+import users_api
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -181,6 +182,7 @@ def delete_job(id):
 def main():
     db_session.global_init('db/database.db')
     app.register_blueprint(jobs_api.blueprint)
+    app.register_blueprint(users_api.blueprint)
     app.run(port=5000, host='127.0.0.1')
 
 
