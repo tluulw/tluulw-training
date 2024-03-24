@@ -157,17 +157,23 @@ def edit_job(id):
     return render_template('add_job.html', title='Editing a job', form=form, h='Editing a Job')
 
 
-@app.route('/delete_job/<int:id>')
+@app.route('/delete_job/<int:id>', methods=['DELETE'])
 def delete_job(id):
     db_sess = db_session.create_session()
+
     job = db_sess.query(Jobs).filter(Jobs.id == id).all()[0]
+
     if current_user.id != 1 and current_user.id != job.team_leader:
         return redirect('/')
+
     db_sess.delete(job)
+
     if db_sess.query(Jobs).filter(Jobs.id == id + 1).first():
         for job in db_sess.query(Jobs).filter(Jobs.id > id).all():
             job.id = job.id - 1
+
     db_sess.commit()
+
     return redirect('/')
 
 
