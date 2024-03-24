@@ -34,7 +34,7 @@ def get_one_job(job_id):
     if db_sess.query(Jobs).filter(Jobs.id == job_id).all():
         pass
     else:
-        return f'Неверный id работы: {job_id}'
+        return make_response(jsonify({'error': f'Incorrect job id: job was not founded'}), 404)
 
     jobs = []
 
@@ -56,7 +56,7 @@ def get_one_job(job_id):
 
 @blueprint.route('/api/jobs/<path:job_path>', methods=['GET'])
 def iskl(job_path):
-    return f'Неверный id работы: {job_path}'
+    return make_response(jsonify({'error': f'Incorrect job id: job_id must be an int, not {job_path}'}), 404)
 
 
 @blueprint.route('/api/jobs/add_job', methods=['POST'])
@@ -70,10 +70,10 @@ def add_job():
     fields = ['job_title', 'team_leader', 'work_size', 'collaborators', 'is_finished']
 
     if len(data) < len(fields) or len(data) > len(fields):
-        return 'нехорошо'
+        return make_response(jsonify({'error': 'Bad request'}), 404)
 
     if db_sess.query(Jobs).filter(Jobs.job == data['job_title']).first():
-        return 'Работа с таким названием уже существует'
+        return make_response(jsonify({'error': 'Job already exists'}), 404)
 
     job = Jobs(
         job=data['job_title'],
@@ -85,17 +85,17 @@ def add_job():
 
     db_sess.add(job)
     db_sess.commit()
-    return 'Работа была добавлена'
+    return make_response(jsonify({'status': 'Job was added'}), 404)
 
 
 @blueprint.route('/api/jobs/delete_job/<int:job_id>', methods=['DELETE'])
 def delete_job(job_id):
     db_sess = db_session.create_session()
 
-    job = db_sess.query(Jobs).filter(Jobs.id == job_id).all()[0]
+    if job_id > max([elem.id for elem in db_sess.query(Jobs).all()]) or job_id <= 0:
+        return make_response(jsonify({'error': f'Incorrect job id: {job_id}'}), 404)
 
-    if not job:
-        return make_response(jsonify({'error': 'Not found'}), 404)
+    job = db_sess.query(Jobs).filter(Jobs.id == job_id).all()[0]
 
     db_sess.delete(job)
 
@@ -106,3 +106,8 @@ def delete_job(job_id):
     db_sess.commit()
 
     return make_response(jsonify({'status': 'job was deleted'}), 200)
+
+
+@blueprint.route('/api/jobs/delete_job/<path:job_path>', methods=['DELETE'])
+def delete_job_error(job_path):
+    return make_response(jsonify({'error': f'Incorrect job id: job_id must be an int, not {job_path}'}), 404)

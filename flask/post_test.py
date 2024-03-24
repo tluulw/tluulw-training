@@ -14,7 +14,7 @@ data = {
 }
 
 # добавление новой работы
-requests.post('http://127.0.0.1:5000/api/jobs/add_job', json=data)
+print(requests.post('http://127.0.0.1:5000/api/jobs/add_job', json=data).json())
 
 # все работы после добавления новой
 print("Работы после добавления новой:",
@@ -29,7 +29,7 @@ incorrect_1 = {
 }
 
 # одно отсутствующее поле
-print("Отсутствует поле:", requests.post('http://127.0.0.1:5000/api/jobs/add_job', json=incorrect_1).text)
+print("Отсутствует поле:", requests.post('http://127.0.0.1:5000/api/jobs/add_job', json=incorrect_1).json())
 
 # для неккоректного запроса с одним лишним полем
 incorrect_2 = {
@@ -40,7 +40,7 @@ incorrect_2 = {
 }
 
 # одно лишнее поле
-print("Лишнее поле:", requests.post('http://127.0.0.1:5000/api/jobs/add_job', json=incorrect_2).text)
+print("Лишнее поле:", requests.post('http://127.0.0.1:5000/api/jobs/add_job', json=incorrect_2).json())
 
 # для неккоректного запроса с существующим названием работы
 incorrect_3 = {
@@ -52,4 +52,4 @@ incorrect_3 = {
 }
 
 # работа существует
-print(requests.post('http://127.0.0.1:5000/api/jobs/add_job', json=incorrect_3).text)
+print(requests.post('http://127.0.0.1:5000/api/jobs/add_job', json=incorrect_3).json())
