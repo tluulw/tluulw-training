@@ -144,6 +144,7 @@ def edit_job(id):
         job.end_date = datetime.datetime.now()
         job.is_finished = form.is_finished.data
 
+
         db_sess.commit()
 
         return redirect('/')
