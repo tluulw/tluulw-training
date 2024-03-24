@@ -1,20 +1,27 @@
 import datetime
 
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, make_response, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_restful import Api
 
+import jobs_api
+import users_api
 from data import db_session
 from data.jobs import Jobs
 from data.users import User
 from forms.user import RegisterForm, LoginForm, AddJobForm
-import jobs_api
-import users_api
 
 app = Flask(__name__)
+api = Api(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 @login_manager.user_loader
@@ -144,7 +151,6 @@ def edit_job(id):
         job.start_date = datetime.datetime.now()
         job.end_date = datetime.datetime.now()
         job.is_finished = form.is_finished.data
-
 
         db_sess.commit()
 

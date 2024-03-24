@@ -55,11 +55,6 @@ def get_one_job(job_id):
     return render_template('works_log.html', jobs=jobs)
 
 
-@blueprint.route('/api/jobs/<path:job_path>', methods=['GET'])
-def iskl(job_path):
-    return make_response(jsonify({'error': f'Incorrect job id: job_id must be an int, not {job_path}'}), 404)
-
-
 @blueprint.route('/api/jobs/add_job', methods=['POST'])
 def add_job():
     db_sess = db_session.create_session()
@@ -107,11 +102,6 @@ def delete_job(job_id):
     return make_response(jsonify({'status': 'job was deleted'}), 200)
 
 
-@blueprint.route('/api/jobs/delete_job/<path:job_path>', methods=['DELETE'])
-def delete_job_error(job_path):
-    return make_response(jsonify({'error': f'Incorrect job id: job_id must be an int, not {job_path}'}), 404)
-
-
 @blueprint.route('/api/jobs/edit_job/<int:job_id>', methods=['PUT'])
 def edit_job(job_id):
     db_sess = db_session.create_session()
@@ -142,8 +132,3 @@ def edit_job(job_id):
     db_sess.commit()
 
     return make_response(jsonify({'status': 'Job was edited'}), 200)
-
-
-@blueprint.route('/api/jobs/edit_job/<path:job_path>', methods=['PUT'])
-def edit_job_error(job_path):
-    return make_response(jsonify({'error': f'Incorrect job id: job_id must be an int, not {job_path}'}), 404)

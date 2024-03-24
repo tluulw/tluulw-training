@@ -47,11 +47,6 @@ def get_one_user(user_id):
     )
 
 
-@blueprint.route('/api/users/<path:user_path>', methods=['GET'])
-def get_one_user_error(user_path):
-    return make_response(jsonify({'error': f'Incorrect user id: user_id must be an int, not {user_path}'}), 404)
-
-
 @blueprint.route('/api/users/register', methods=['POST'])
 def register():
     db_sess = db_session.create_session()
@@ -107,11 +102,6 @@ def delete_user(user_id):
     return make_response(jsonify({'status': 'User was deleted'}), 200)
 
 
-@blueprint.route('/api/users/delete_user/<path:user_path>', methods=['DELETE'])
-def delete_user_error(user_path):
-    return make_response(jsonify({'error': f'Incorrect user id: user_id must be an int, not {user_path}'}), 404)
-
-
 @blueprint.route('/api/users/edit_user/<int:user_id>', methods=['PUT'])
 def edit_user(user_id):
     db_sess = db_session.create_session()
@@ -148,8 +138,3 @@ def edit_user(user_id):
     db_sess.commit()
 
     return make_response(jsonify({'status': 'User was edited'}), 200)
-
-
-@blueprint.route('/api/users/edit_user/<path:user_path>', methods=['PUT'])
-def edit_user_error(user_path):
-    return make_response(jsonify({'error': f'Incorrect user id: user_id must be an int, not {user_path}'}), 404)
