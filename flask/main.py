@@ -6,6 +6,7 @@ from flask_restful import Api
 
 import jobs_api
 import users_api
+import users_resource
 from data import db_session
 from data.jobs import Jobs
 from data.users import User
@@ -187,8 +188,13 @@ def delete_job(id):
 
 def main():
     db_session.global_init('db/database.db')
+
     app.register_blueprint(jobs_api.blueprint)
     app.register_blueprint(users_api.blueprint)
+
+    api.add_resource(users_resource.UsersListResource, '/api/v2/users')
+    api.add_resource(users_resource.UsersResource, '/api/v2/users/<int:user_id>')
+
     app.run(port=5000, host='127.0.0.1')
 
 
