@@ -10,6 +10,7 @@ import users_resource
 from data import db_session
 from data.jobs import Jobs
 from data.users import User
+import jobs_resource
 from forms.user import RegisterForm, LoginForm, AddJobForm
 
 app = Flask(__name__)
@@ -194,6 +195,9 @@ def main():
 
     api.add_resource(users_resource.UsersListResource, '/api/v2/users')
     api.add_resource(users_resource.UsersResource, '/api/v2/users/<int:user_id>')
+
+    api.add_resource(jobs_resource.JobsListResource, '/api/v2/jobs')
+    api.add_resource(jobs_resource.JobsResource, '/api/v2/jobs/<int:job_id>')
 
     app.run(port=5000, host='127.0.0.1')
 
